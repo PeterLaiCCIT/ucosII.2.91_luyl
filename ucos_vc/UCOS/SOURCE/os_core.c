@@ -1869,31 +1869,32 @@ void  OS_TaskStatStkChk (void)
 * Description: This function is internal to uC/OS-II and is used to initialize a Task Control Block when
 *              a task is created (see OSTaskCreate() and OSTaskCreateExt()).
 *
-* Arguments  : prio          is the priority of the task being created
+* Arguments  : prio          is the priority of the task being created  被创建的任务的优先级
 *
 *              ptos          is a pointer to the task's top-of-stack assuming that the CPU registers
 *                            have been placed on the stack.  Note that the top-of-stack corresponds to a
 *                            'high' memory location is OS_STK_GROWTH is set to 1 and a 'low' memory
 *                            location if OS_STK_GROWTH is set to 0.  Note that stack growth is CPU
-*                            specific.
+*                            specific.     任务堆栈栈顶的地址
 *
 *              pbos          is a pointer to the bottom of stack.  A NULL pointer is passed if called by
-*                            'OSTaskCreate()'.
+*                            'OSTaskCreate()'.    
+							 任务堆栈栈底的地址(使用OSTaskCreate创建的任务，没有拓展功能，不进行堆栈检查，也就不用该参数)
 *
-*              id            is the task's ID (0..65535)
+*              id            is the task's ID (0..65535)  任务的ID
 *
 *              stk_size      is the size of the stack (in 'stack units').  If the stack units are INT8Us
 *                            then, 'stk_size' contains the number of bytes for the stack.  If the stack
 *                            units are INT32Us then, the stack contains '4 * stk_size' bytes.  The stack
 *                            units are established by the #define constant OS_STK which is CPU
-*                            specific.  'stk_size' is 0 if called by 'OSTaskCreate()'.
+*                            specific.  'stk_size' is 0 if called by 'OSTaskCreate()'.   堆栈的大小
 *
 *              pext          is a pointer to a user supplied memory area that is used to extend the task
 *                            control block.  This allows you to store the contents of floating-point
 *                            registers, MMU registers or anything else you could find useful during a
 *                            context switch.  You can even assign a name to each task and store this name
 *                            in this TCB extension.  A NULL pointer is passed if called by OSTaskCreate().
-*
+*								任务控制块的扩展块的地址
 *              opt           options as passed to 'OSTaskCreateExt()' or,
 *                            0 if called from 'OSTaskCreate()'.
 *
@@ -1925,7 +1926,7 @@ INT8U  OS_TCBInit (INT8U    prio,
     OS_ENTER_CRITICAL();
     ptcb = OSTCBFreeList;                                  /* Get a free TCB from the free TCB list    */
     if (ptcb != (OS_TCB *)0) {
-        OSTCBFreeList            = ptcb->OSTCBNext;        /* Update pointer to free TCB list          */
+        OSTCBFreeList            = ptcb->OSTCBNext;        /* Update pointer to free TCB list  将        */  
         OS_EXIT_CRITICAL();
         ptcb->OSTCBStkPtr        = ptos;                   /* Load Stack pointer in TCB                */
         ptcb->OSTCBPrio          = prio;                   /* Load task priority into TCB              */
