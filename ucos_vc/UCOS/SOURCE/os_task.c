@@ -171,7 +171,7 @@ INT8U  OSTaskChangePrio (INT8U  oldprio,
 *              be created prior to the start of multitasking or by a running task.  A task cannot be
 *              created by an ISR.
 *
-* Arguments  : task     is a pointer to the task's code
+* Arguments  : task     is a pointer to the task's code   任务代码地址
 *
 *              p_arg    is a pointer to an optional data area which can be used to pass parameters to
 *                       the task when the task first executes.  Where the task is concerned it thinks
@@ -183,16 +183,16 @@ INT8U  OSTaskChangePrio (INT8U  oldprio,
 *                                   Task code;
 *                               }
 *                           }
-*
+*						任务参数
 *              ptos     is a pointer to the task's top of stack.  If the configuration constant
 *                       OS_STK_GROWTH is set to 1, the stack is assumed to grow downward (i.e. from high
 *                       memory to low memory).  'pstk' will thus point to the highest (valid) memory
 *                       location of the stack.  If OS_STK_GROWTH is set to 0, 'pstk' will point to the
 *                       lowest memory location of the stack and the stack will grow with increasing
-*                       memory locations.
+*                       memory locations.         任务堆栈栈顶
 *
 *              prio     is the task's priority.  A unique priority MUST be assigned to each task and the
-*                       lower the number, the higher the priority.
+*                       lower the number, the higher the priority.  任务的优先级
 *
 * Returns    : OS_ERR_NONE             if the function was successful.
 *              OS_PRIO_EXIT            if the task priority already exist
@@ -209,7 +209,7 @@ INT8U  OSTaskCreate (void   (*task)(void *p_arg),
                      OS_STK  *ptos,
                      INT8U    prio)
 {
-    OS_STK    *psp;
+    OS_STK    *psp;                          //定义一个指向任务堆栈的指针
     INT8U      err;
 #if OS_CRITICAL_METHOD == 3u                 /* Allocate storage for CPU status register               */
     OS_CPU_SR  cpu_sr = 0u;
@@ -223,28 +223,30 @@ INT8U  OSTaskCreate (void   (*task)(void *p_arg),
     }
 #endif
 
-#if OS_ARG_CHK_EN > 0u
+#if OS_ARG_CHK_EN > 0u                       //是否进行参数检查
     if (prio > OS_LOWEST_PRIO) {             /* Make sure priority is within allowable range           */
         return (OS_ERR_PRIO_INVALID);
     }
 #endif
-    OS_ENTER_CRITICAL();
+    OS_ENTER_CRITICAL(); 
+	//如果在中断程序中调用本函数，那么OSIntNesting>0, 这是不允许的
     if (OSIntNesting > 0u) {                 /* Make sure we don't create the task from within an ISR  */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_CREATE_ISR);
     }
-    if (OSTCBPrioTbl[prio] == (OS_TCB *)0) { /* Make sure task doesn't already exist at this priority  */
+    if (OSTCBPrioTbl[prio] == (OS_TCB *)0) { /* Make sure task doesn't already exist at this priority  *///如果该优先级任务块没有被占用
         OSTCBPrioTbl[prio] = OS_TCB_RESERVED;/* Reserve the priority to prevent others from doing ...  */
                                              /* ... the same thing until task is created.              */
+		//OS_TCB_RESERVED是 (OS_TCB *)1， OSTCBPrioTbl[prio]目前还没有指向哪一个TCB，因为不能长期在临界区中，因此应该先给一个值占领它，但须其他任务使用它
         OS_EXIT_CRITICAL();
-        psp = OSTaskStkInit(task, p_arg, ptos, 0u);             /* Initialize the task's stack         */
-        err = OS_TCBInit(prio, psp, (OS_STK *)0, 0u, 0u, (void *)0, 0u);
+        psp = OSTaskStkInit(task, p_arg, ptos, 0u);             /* Initialize the task's stack         */  //该函数实现任务堆栈的初始化
+        err = OS_TCBInit(prio, psp, (OS_STK *)0, 0u, 0u, (void *)0, 0u);   //任务控制块的初始化
         if (err == OS_ERR_NONE) {
-            if (OSRunning == OS_TRUE) {      /* Find highest priority task if multitasking has started */
+            if (OSRunning == OS_TRUE) {      /* Find highest priority task if multitasking has started */ //如果多任务已经启动，就进行一次任务调度
                 OS_Sched();
             }
         } else {
-            OS_ENTER_CRITICAL();
+            OS_ENTER_CRITICAL();  //如果因错误不能创建任务，重新将优先级指针表的对应项清零
             OSTCBPrioTbl[prio] = (OS_TCB *)0;/* Make this priority available to others                 */
             OS_EXIT_CRITICAL();
         }
@@ -366,7 +368,7 @@ INT8U  OSTaskCreateExt (void   (*task)(void *p_arg),
         OS_EXIT_CRITICAL();
 
 #if (OS_TASK_STAT_STK_CHK_EN > 0u)
-        OS_TaskStkClr(pbos, stk_size, opt);                    /* Clear the task stack (if needed)     */
+        OS_TaskStkClr(pbos, stk_size, opt);                    /* Clear the task stack (if needed)     *///清空任务的堆栈
 #endif
 
         psp = OSTaskStkInit(task, p_arg, ptos, opt);           /* Initialize the task's stack          */
@@ -1218,15 +1220,15 @@ void  OS_TaskReturn (void)
 /*
 *********************************************************************************************************
 *                                        CLEAR TASK STACK
-*
-* Description: This function is used to clear the stack of a task (i.e. write all zeros)
+* 
+* Description: This function is used to clear the stack of a task (i.e. write all zeros)  将整个任务对应的堆栈全部清零
 *
 * Arguments  : pbos     is a pointer to the task's bottom of stack.  If the configuration constant
 *                       OS_STK_GROWTH is set to 1, the stack is assumed to grow downward (i.e. from high
 *                       memory to low memory).  'pbos' will thus point to the lowest (valid) memory
 *                       location of the stack.  If OS_STK_GROWTH is set to 0, 'pbos' will point to the
 *                       highest memory location of the stack and the stack will grow with increasing
-*                       memory locations.  'pbos' MUST point to a valid 'free' data item.
+*                       memory locations.  'pbos' MUST point to a valid 'free' data item.   栈底指针
 *
 *              size     is the number of 'stack elements' to clear.
 *
@@ -1241,13 +1243,13 @@ void  OS_TaskReturn (void)
 void  OS_TaskStkClr (OS_STK  *pbos,
                      INT32U   size,
                      INT16U   opt)
-{
+{   //如果配置了堆栈检查，则才有可能进行清除操作
     if ((opt & OS_TASK_OPT_STK_CHK) != 0x0000u) {      /* See if stack checking has been enabled       */
-        if ((opt & OS_TASK_OPT_STK_CLR) != 0x0000u) {  /* See if stack needs to be cleared             */
-#if OS_STK_GROWTH == 1u
+        if ((opt & OS_TASK_OPT_STK_CLR) != 0x0000u) {  /* See if stack needs to be cleared             */ //如果选项中配置了堆栈清除，则才有可能进行清除操作
+#if OS_STK_GROWTH == 1u   //如果堆栈的增长方向为从高到低，则栈底在低地址
             while (size > 0u) {                        /* Stack grows from HIGH to LOW memory          */
                 size--;
-                *pbos++ = (OS_STK)0;                   /* Clear from bottom of stack and up!           */
+                *pbos++ = (OS_STK)0;                   /* Clear from bottom of stack and up!           *///设置为0，然后pbos向上移动，准备清下一个数据单元
             }
 #else
             while (size > 0u) {                        /* Stack grows from LOW to HIGH memory          */
