@@ -438,74 +438,74 @@ INT8U  OSTaskDel (INT8U prio)
 
 
 
-    if (OSIntNesting > 0u) {                            /* See if trying to delete from ISR            */
+    if (OSIntNesting > 0u) {                            /* See if trying to delete from ISR  不允许在ISR中删除任务          */
         return (OS_ERR_TASK_DEL_ISR);
     }
-    if (prio == OS_TASK_IDLE_PRIO) {                    /* Not allowed to delete idle task             */
+    if (prio == OS_TASK_IDLE_PRIO) {                    /* Not allowed to delete idle task  不允许删除空闲任务           */
         return (OS_ERR_TASK_DEL_IDLE);
     }
-#if OS_ARG_CHK_EN > 0u
+#if OS_ARG_CHK_EN > 0u									/* 如果配置了参数检查，则检查优先级是否有效 */
     if (prio >= OS_LOWEST_PRIO) {                       /* Task priority valid ?                       */
-        if (prio != OS_PRIO_SELF) {
+        if (prio != OS_PRIO_SELF) {						/* OS_PRIO_SELF特指本任务，值为0xffu */
             return (OS_ERR_PRIO_INVALID);
         }
     }
 #endif
 
 /*$PAGE*/
-    OS_ENTER_CRITICAL();
-    if (prio == OS_PRIO_SELF) {                         /* See if requesting to delete self            */
-        prio = OSTCBCur->OSTCBPrio;                     /* Set priority to delete to current           */
+    OS_ENTER_CRITICAL();   /* 进入临界区，因为要访问全局变量OSTCBCur,OSTCBPrio */
+    if (prio == OS_PRIO_SELF) {                         /* See if requesting to delete self   如果是删除自己         */
+        prio = OSTCBCur->OSTCBPrio;                     /* Set priority to delete to current    取得自己的优先级       */
     }
-    ptcb = OSTCBPrioTbl[prio];
-    if (ptcb == (OS_TCB *)0) {                          /* Task to delete must exist                   */
+    ptcb = OSTCBPrioTbl[prio];    /* 取得要删除任务的TCB */
+    if (ptcb == (OS_TCB *)0) {                          /* Task to delete must exist  该任务是否存在，如果ptcb是空地址，则不存在   */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_NOT_EXIST);
     }
-    if (ptcb == OS_TCB_RESERVED) {                      /* Must not be assigned to Mutex               */
+    if (ptcb == OS_TCB_RESERVED) {                      /* Must not be assigned to Mutex      如果该任务快被保留         */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_DEL);
     }
-
-    OSRdyTbl[ptcb->OSTCBY] &= (OS_PRIO)~ptcb->OSTCBBitX;
+	/* 以上均是参数检查，现在开始删除任务 */
+    OSRdyTbl[ptcb->OSTCBY] &= (OS_PRIO)~ptcb->OSTCBBitX;  /* 清除掉任务的就绪标志 */
     if (OSRdyTbl[ptcb->OSTCBY] == 0u) {                 /* Make task not ready                         */
-        OSRdyGrp           &= (OS_PRIO)~ptcb->OSTCBBitY;
+        OSRdyGrp           &= (OS_PRIO)~ptcb->OSTCBBitY;  /* 清除掉任务的就绪标志 */
     }
-
-#if (OS_EVENT_EN)
-    if (ptcb->OSTCBEventPtr != (OS_EVENT *)0) {
+	/* 上述操作完成后，任务已经被取消就绪状态了。现在已经是睡眠状态了 */
+#if (OS_EVENT_EN)                           /* 如果操作系统使用了事件操作 */
+    if (ptcb->OSTCBEventPtr != (OS_EVENT *)0) {  //被删除的任务是否还在等待事件的发生，如果是，将它从事件等待队列中删除
         OS_EventTaskRemove(ptcb, ptcb->OSTCBEventPtr);  /* Remove this task from any event   wait list */
     }
-#if (OS_EVENT_MULTI_EN > 0u)
+#if (OS_EVENT_MULTI_EN > 0u)              /* 如果操作系统允许任务等待多个事件 */
     if (ptcb->OSTCBEventMultiPtr != (OS_EVENT **)0) {   /* Remove this task from any events' wait lists*/
         OS_EventTaskRemoveMulti(ptcb, ptcb->OSTCBEventMultiPtr);
     }
 #endif
 #endif
 
-#if (OS_FLAG_EN > 0u) && (OS_MAX_FLAGS > 0u)
+#if (OS_FLAG_EN > 0u) && (OS_MAX_FLAGS > 0u)    /* 如果操作系统允许使用事件标志组管理 */
     pnode = ptcb->OSTCBFlagNode;
-    if (pnode != (OS_FLAG_NODE *)0) {                   /* If task is waiting on event flag            */
-        OS_FlagUnlink(pnode);                           /* Remove from wait list                       */
+    if (pnode != (OS_FLAG_NODE *)0) {                   /* If task is waiting on event flag   如果事件在等待事件标志         */
+        OS_FlagUnlink(pnode);                           /* Remove from wait list      删除等待队列中的这个任务的标志                 */
     }
 #endif
 
-    ptcb->OSTCBDly      = 0u;                           /* Prevent OSTimeTick() from updating          */
+    ptcb->OSTCBDly      = 0u;                           /* Prevent OSTimeTick() from updating  如果任务在等待延时时间到，则不需要等待        */
     ptcb->OSTCBStat     = OS_STAT_RDY;                  /* Prevent task from being resumed             */
-    ptcb->OSTCBStatPend = OS_STAT_PEND_OK;
+    ptcb->OSTCBStatPend = OS_STAT_PEND_OK;				/* 取消所有的等待 */
     if (OSLockNesting < 255u) {                         /* Make sure we don't context switch           */
-        OSLockNesting++;
+        OSLockNesting++;								/* 强行将调度器上锁一次 */
     }
-    OS_EXIT_CRITICAL();                                 /* Enabling INT. ignores next instruc.         */
-    OS_Dummy();                                         /* ... Dummy ensures that INTs will be         */
+    OS_EXIT_CRITICAL();                                 /* Enabling INT. ignores next instruc. 离开临界区，允许中断，但前面已经保证了OSLockNesting不为0，因此不会进行任务调度，保证该段代码的连续性，又允许了中断服务        */
+    OS_Dummy();                                         /* ... Dummy ensures that INTs will be 该函数什么也不做，空函数，给中断一定的时间        */
     OS_ENTER_CRITICAL();                                /* ... disabled HERE!                          */
-    if (OSLockNesting > 0u) {                           /* Remove context switch lock                  */
+    if (OSLockNesting > 0u) {                           /* Remove context switch lock    刚才给调度器加1，现在减回来              */
         OSLockNesting--;
     }
-    OSTaskDelHook(ptcb);                                /* Call user defined hook                      */
-    OSTaskCtr--;                                        /* One less task being managed                 */
+    OSTaskDelHook(ptcb);                                /* Call user defined hook   删除任务的钩子函数                   */
+    OSTaskCtr--;                                        /* One less task being managed   任务减少一个，任务计数器减1              */
     OSTCBPrioTbl[prio] = (OS_TCB *)0;                   /* Clear old priority entry                    */
-    if (ptcb->OSTCBPrev == (OS_TCB *)0) {               /* Remove from TCB chain                       */
+    if (ptcb->OSTCBPrev == (OS_TCB *)0) {               /* Remove from TCB chain   从就绪链表中把TCB摘下来，插进空闲链表                    */
         ptcb->OSTCBNext->OSTCBPrev = (OS_TCB *)0;
         OSTCBList                  = ptcb->OSTCBNext;
     } else {
@@ -517,9 +517,9 @@ INT8U  OSTaskDel (INT8U prio)
 #if OS_TASK_NAME_EN > 0u
     ptcb->OSTCBTaskName = (INT8U *)(void *)"?";
 #endif
-    OS_EXIT_CRITICAL();
+    OS_EXIT_CRITICAL();									/* 离开临界区，也就是开中断 */
     if (OSRunning == OS_TRUE) {
-        OS_Sched();                                     /* Find new highest priority task              */
+        OS_Sched();                                     /* Find new highest priority task    如果在运行多任务，当然要进行一次任务调度          */
     }
     return (OS_ERR_NONE);
 }
@@ -582,33 +582,34 @@ INT8U  OSTaskDelReq (INT8U prio)
 
 
 
-    if (prio == OS_TASK_IDLE_PRIO) {                            /* Not allowed to delete idle task     */
+    if (prio == OS_TASK_IDLE_PRIO) {                            /* Not allowed to delete idle task   参数检查  */
         return (OS_ERR_TASK_DEL_IDLE);
     }
 #if OS_ARG_CHK_EN > 0u
-    if (prio >= OS_LOWEST_PRIO) {                               /* Task priority valid ?               */
+    if (prio >= OS_LOWEST_PRIO) {                               /* Task priority valid ?   继续参数检查            */
         if (prio != OS_PRIO_SELF) {
             return (OS_ERR_PRIO_INVALID);
         }
     }
 #endif
-    if (prio == OS_PRIO_SELF) {                                 /* See if a task is requesting to ...  */
-        OS_ENTER_CRITICAL();                                    /* ... this task to delete itself      */
-        stat = OSTCBCur->OSTCBDelReq;                           /* Return request status to caller     */
-        OS_EXIT_CRITICAL();
+    if (prio == OS_PRIO_SELF) {                                 /* See if a task is requesting to ... 判断是否有任务请求删除自己 */
+        OS_ENTER_CRITICAL();                                    /* ... this task to delete itself     开始访问临街资源（全局变量OSTCBCur） */
+        stat = OSTCBCur->OSTCBDelReq;                           /* Return request status to caller    任务控制块的OSTCBDelReq域存放了是否有删除请求 */
+        OS_EXIT_CRITICAL();										/* 开中断 */
         return (stat);
     }
+	/* 如果是请求删除其他任务 */
     OS_ENTER_CRITICAL();
     ptcb = OSTCBPrioTbl[prio];
     if (ptcb == (OS_TCB *)0) {                                  /* Task to delete must exist           */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_NOT_EXIST);                         /* Task must already be deleted        */
     }
-    if (ptcb == OS_TCB_RESERVED) {                              /* Must NOT be assigned to a Mutex     */
+    if (ptcb == OS_TCB_RESERVED) {                              /* Must NOT be assigned to a Mutex   如果任务块被保留  */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_DEL);
     }
-    ptcb->OSTCBDelReq = OS_ERR_TASK_DEL_REQ;                    /* Set flag indicating task to be DEL. */
+    ptcb->OSTCBDelReq = OS_ERR_TASK_DEL_REQ;                    /* Set flag indicating task to be DEL. 在对方的TCB的OSTCBDelReq上打上标志，请求删除成功*/
     OS_EXIT_CRITICAL();
     return (OS_ERR_NONE);
 }
@@ -958,41 +959,42 @@ INT8U  OSTaskSuspend (INT8U prio)
 
 
 #if OS_ARG_CHK_EN > 0u
-    if (prio == OS_TASK_IDLE_PRIO) {                            /* Not allowed to suspend idle task    */
+    if (prio == OS_TASK_IDLE_PRIO) {                            /* Not allowed to suspend idle task   不允许挂起空闲任务 */
         return (OS_ERR_TASK_SUSPEND_IDLE);
     }
-    if (prio >= OS_LOWEST_PRIO) {                               /* Task priority valid ?               */
+    if (prio >= OS_LOWEST_PRIO) {                               /* Task priority valid ?    检查优先级           */
         if (prio != OS_PRIO_SELF) {
             return (OS_ERR_PRIO_INVALID);
         }
     }
 #endif
     OS_ENTER_CRITICAL();
-    if (prio == OS_PRIO_SELF) {                                 /* See if suspend SELF                 */
+    if (prio == OS_PRIO_SELF) {                                 /* See if suspend SELF   如果优先级是OS_PRIO_SELF，则取得自己真正的优先级              */
         prio = OSTCBCur->OSTCBPrio;
         self = OS_TRUE;
-    } else if (prio == OSTCBCur->OSTCBPrio) {                   /* See if suspending self              */
+    } else if (prio == OSTCBCur->OSTCBPrio) {                   /* See if suspending self     挂起的是否是当前任务         */
         self = OS_TRUE;
     } else {
-        self = OS_FALSE;                                        /* No suspending another task          */
+        self = OS_FALSE;                                        /* No suspending another task    表示将挂起其他任务      */
     }
     ptcb = OSTCBPrioTbl[prio];
-    if (ptcb == (OS_TCB *)0) {                                  /* Task to suspend must exist          */
+    if (ptcb == (OS_TCB *)0) {                                  /* Task to suspend must exist     被挂起的任务是否不存在     */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_SUSPEND_PRIO);
     }
-    if (ptcb == OS_TCB_RESERVED) {                              /* See if assigned to Mutex            */
+    if (ptcb == OS_TCB_RESERVED) {                              /* See if assigned to Mutex       查看任务块是否是被保留的     */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_NOT_EXIST);
     }
+	/* 取消就绪表和就绪组中的就绪标志 */
     y            = ptcb->OSTCBY;
     OSRdyTbl[y] &= (OS_PRIO)~ptcb->OSTCBBitX;                   /* Make task not ready                 */
     if (OSRdyTbl[y] == 0u) {
         OSRdyGrp &= (OS_PRIO)~ptcb->OSTCBBitY;
     }
-    ptcb->OSTCBStat |= OS_STAT_SUSPEND;                         /* Status of task is 'SUSPENDED'       */
+    ptcb->OSTCBStat |= OS_STAT_SUSPEND;                         /* Status of task is 'SUSPENDED' 标志任务被挂起了      */
     OS_EXIT_CRITICAL();
-    if (self == OS_TRUE) {                                      /* Context switch only if SELF         */
+    if (self == OS_TRUE) {                                      /* Context switch only if SELF 如果挂起的是自己，则进行一次任务调度        */
         OS_Sched();                                             /* Find new highest priority task      */
     }
     return (OS_ERR_NONE);
