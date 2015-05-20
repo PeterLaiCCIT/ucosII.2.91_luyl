@@ -805,25 +805,25 @@ INT8U  OSTaskResume (INT8U prio)
 
 
 #if OS_ARG_CHK_EN > 0u
-    if (prio >= OS_LOWEST_PRIO) {                             /* Make sure task priority is valid      */
+    if (prio >= OS_LOWEST_PRIO) {                             /* Make sure task priority is valid 检查优先级有效性     */
         return (OS_ERR_PRIO_INVALID);
     }
 #endif
     OS_ENTER_CRITICAL();
     ptcb = OSTCBPrioTbl[prio];
-    if (ptcb == (OS_TCB *)0) {                                /* Task to suspend must exist            */
+    if (ptcb == (OS_TCB *)0) {                                /* Task to suspend must exist    被挂起的任务必须存在        */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_RESUME_PRIO);
     }
-    if (ptcb == OS_TCB_RESERVED) {                            /* See if assigned to Mutex              */
+    if (ptcb == OS_TCB_RESERVED) {                            /* See if assigned to Mutex    查看控制块是否被保留          */
         OS_EXIT_CRITICAL();
         return (OS_ERR_TASK_NOT_EXIST);
     }
-    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) != OS_STAT_RDY) { /* Task must be suspended                */
+    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) != OS_STAT_RDY) { /* Task must be suspended  任务必须是被挂起的才需要恢复              */
         ptcb->OSTCBStat &= (INT8U)~(INT8U)OS_STAT_SUSPEND;    /* Remove suspension                     */
-        if (ptcb->OSTCBStat == OS_STAT_RDY) {                 /* See if task is now ready              */
-            if (ptcb->OSTCBDly == 0u) {
-                OSRdyGrp               |= ptcb->OSTCBBitY;    /* Yes, Make task ready to run           */
+        if (ptcb->OSTCBStat == OS_STAT_RDY) {                 /* See if task is now ready  是否就绪了            */
+            if (ptcb->OSTCBDly == 0u) {                       /* 是否没有延时 */
+                OSRdyGrp               |= ptcb->OSTCBBitY;    /* Yes, Make task ready to run 设置就绪组和就绪表，使任务就绪    */
                 OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
                 OS_EXIT_CRITICAL();
                 if (OSRunning == OS_TRUE) {

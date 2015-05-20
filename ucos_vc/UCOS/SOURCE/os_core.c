@@ -874,8 +874,8 @@ void  OSStatInit (void)
 /*$PAGE*/
 /*
 *********************************************************************************************************
-*                                         PROCESS SYSTEM TICK
-*
+*                                         PROCESS SYSTEM TICK   任务调度函数。
+*启动多任务以后，每个时钟中断都要通过该函数执行任务的调度
 * Description: This function is used to signal to uC/OS-II the occurrence of a 'system tick' (also known
 *              as a 'clock tick').  This function should be called by the ticker ISR but, can also be
 *              called by a high priority task.
@@ -894,10 +894,10 @@ void  OSTimeTick (void)
 
 #if OS_TIME_GET_SET_EN > 0u
     OS_ENTER_CRITICAL();                                   /* Update the 32-bit tick counter               */
-    OSTime++;
+    OSTime++;												/* 调度计数器加1 */
     OS_EXIT_CRITICAL();
 #endif
-    if (OSRunning == OS_TRUE) {
+    if (OSRunning == OS_TRUE) {								/* 如果已经启动了多任务 */
 #if OS_TICK_STEP_EN > 0u
         switch (OSTickStepState) {                         /* Determine whether we need to process a tick  */
             case OS_TICK_STEP_DIS:                         /* Yes, stepping is disabled                    */
@@ -922,23 +922,28 @@ void  OSTimeTick (void)
             return;
         }
 #endif
-        ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
-        while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
+        ptcb = OSTCBList;                                  /* Point at first TCB in TCB list    ptcb指向就绪链表的表头           */
+        while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list   如果该任务为非空闲任务          */
+			/* 就绪链表中的最后一个TCB是空闲任务的，从操作系统的初始化函数OSInit来看，我们创建的第一个任务是空闲任务。然后每次创建的新任务都是
+			将该任务的TCB插入到就绪链表的表头，而空闲任务不允许被删除。因此，在就绪链表中，最后一个TCB永远是空闲任务的。所以while循环从就绪链表的
+			表头开始，一直到空闲任务为止，遍历了除空闲任务之外的所有任务。*/
             OS_ENTER_CRITICAL();
-            if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO     */
-                ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay       */
-                if (ptcb->OSTCBDly == 0u) {                /* Check for timeout                            */
+            if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO 如果该任务设置了时间延时或事件等待延时    */
+                ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay  延时时间减1，因为过了1个时钟滴答     */
+                if (ptcb->OSTCBDly == 0u) {                /* Check for timeout             检查延时是否到期了               */
 
-                    if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {
+                    if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {  /* 如果任务有等待任一事件的发生 */
+						/* 清等待标志，因为等待时间到了，事件没有发生，不再等待 */
                         ptcb->OSTCBStat  &= (INT8U)~(INT8U)OS_STAT_PEND_ANY;          /* Yes, Clear status flag   */
-                        ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout    */
-                    } else {
-                        ptcb->OSTCBStatPend = OS_STAT_PEND_OK;
+                        ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout  指示事件等待因为超时的原因为结束  */
+                    } else {			                                    	/* 如果任务没有等待事件的发生，那么只是简单的延时 */
+                        ptcb->OSTCBStatPend = OS_STAT_PEND_OK;                  /* 指示延时时间到了 */
                     }
 
-                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?       */
+                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?  如果任务不是被挂起的     */
                         OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready          */
-                        OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
+                        OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;		
+						/* 延时时间到了，让任务就绪。如果任务是被挂起的，尽管延时时间到了，也不能就绪，挂起的任务只能用OSTaskResume来恢复到就绪状态 */
                     }
                 }
             }
