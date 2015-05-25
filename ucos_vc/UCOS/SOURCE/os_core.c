@@ -643,7 +643,7 @@ void  OSIntEnter (void)
 /*$PAGE*/
 /*
 *********************************************************************************************************
-*                                               EXIT ISR
+*                                               EXIT ISR   中断中的任务调度函数
 *
 * Description: This function is used to notify uC/OS-II that you have completed serviving an ISR.  When
 *              the last nested ISR has completed, uC/OS-II will call the scheduler to determine whether
@@ -668,21 +668,22 @@ void  OSIntExit (void)
 
 
 
-    if (OSRunning == OS_TRUE) {
+    if (OSRunning == OS_TRUE) {     /* 只有在多任务启动后才调度 */
         OS_ENTER_CRITICAL();
-        if (OSIntNesting > 0u) {                           /* Prevent OSIntNesting from wrapping       */
+        if (OSIntNesting > 0u) {                           /* Prevent OSIntNesting from wrapping   防止中断嵌套.在进入中断的时候，将 OSIntNesting加1，在离开中断的时候，将OSIntNesting减1   */
             OSIntNesting--;
         }
         if (OSIntNesting == 0u) {                          /* Reschedule only if all ISRs complete ... */
-            if (OSLockNesting == 0u) {                     /* ... and not locked.                      */
+            if (OSLockNesting == 0u) {                     /* ... and not locked.  调度器未加锁                    */
                 OS_SchedNew();
                 OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
+                /* 只有当最高优先级的就绪任务不是当前运行的任务时才需要进行调度，否则中断结束后应继续运行原来的任务 */
                 if (OSPrioHighRdy != OSPrioCur) {          /* No Ctx Sw if current task is highest rdy */
 #if OS_TASK_PROFILE_EN > 0u
                     OSTCBHighRdy->OSTCBCtxSwCtr++;         /* Inc. # of context switches to this task  */
 #endif
                     OSCtxSwCtr++;                          /* Keep track of the number of ctx switches */
-                    OSIntCtxSw();                          /* Perform interrupt level ctx switch       */
+                    OSIntCtxSw();                          /* Perform interrupt level ctx switch  执行中断中任务的调度  */
                 }
             }
         }
