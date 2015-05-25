@@ -13,7 +13,7 @@
 * LICENSING TERMS:
 * ---------------
 *   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micri�m to properly license
+* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license
 * its use in your product. We provide ALL the source code for your convenience and to help you experience
 * uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
 * licensing fee.
@@ -100,15 +100,15 @@ extern "C" {
 *********************************************************************************************************
 *                              TASK STATUS (Bit definition for OSTCBStat)
 *********************************************************************************************************
-*/
+*/  Pending :等待
 #define  OS_STAT_RDY                 0x00u  /* Ready to run                                            */
 #define  OS_STAT_SEM                 0x01u  /* Pending on semaphore                                    */
 #define  OS_STAT_MBOX                0x02u  /* Pending on mailbox                                      */
 #define  OS_STAT_Q                   0x04u  /* Pending on queue                                        */
-#define  OS_STAT_SUSPEND             0x08u  /* Task is suspended                                       */
+#define  OS_STAT_SUSPEND             0x08u  /* Task is suspended     任务挂起                                  */
 #define  OS_STAT_MUTEX               0x10u  /* Pending on mutual exclusion semaphore                   */
 #define  OS_STAT_FLAG                0x20u  /* Pending on event flag group                             */
-#define  OS_STAT_MULTI               0x80u  /* Pending on multiple events                              */
+#define  OS_STAT_MULTI               0x80u  /* Pending on multiple events      等待多事件                        */
 
 #define  OS_STAT_PEND_ANY         (OS_STAT_SEM | OS_STAT_MBOX | OS_STAT_Q | OS_STAT_MUTEX | OS_STAT_FLAG)
 
