@@ -947,7 +947,7 @@ void  OSTimeTick (void)
                     }
                 }
             }
-            ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
+            ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list  指向下一个TCB    */
             OS_EXIT_CRITICAL();
         }
     }
@@ -1622,26 +1622,30 @@ void  OS_MemCopy (INT8U  *pdest,
 *              2) Rescheduling is prevented when the scheduler is locked (see OS_SchedLock())
 *********************************************************************************************************
 */
+/*OS_Sched首先判断是否可以进行任务切换，如果中断服务程序没有完成，或者是调度器上了锁，或者当前运行的任务是优先级最高的，那么都
+不会进行任务切换。当需要进行任务切换时，OS_Sched首先增加将要被换入CPU的任务的被调次数OSTCBCtxSwCtr,然后是整个操作系统的任务切换
+的次数OSCtxSwCtr。最后调用OS_TASK_SW()进行真正的任务切换。
+*/
 
 void  OS_Sched (void)
 {
 #if OS_CRITICAL_METHOD == 3u                           /* Allocate storage for CPU status register     */
     OS_CPU_SR  cpu_sr = 0u;
 #endif
-
+/*只有在所有的中断服务都完成的情况下，才可以进行任务切换。在有中断服务的情况下，OSIntNesting > 0，因为只要一进入中断服务程序，就会对OSIntNesting该值执行加1操作  */
 
 
     OS_ENTER_CRITICAL();
-    if (OSIntNesting == 0u) {                          /* Schedule only if all ISRs done and ...       */
-        if (OSLockNesting == 0u) {                     /* ... scheduler is not locked                  */
-            OS_SchedNew();
-            OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
-            if (OSPrioHighRdy != OSPrioCur) {          /* No Ctx Sw if current task is highest rdy     */
+    if (OSIntNesting == 0u) {                          /* Schedule only if all ISRs done and ...     */
+        if (OSLockNesting == 0u) {                     /* ... scheduler is not locked  调度器没有上锁， OSLockNesting是调度锁             */
+            OS_SchedNew();   //找到优先级最高的任务
+            OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];  /* OSTCBHighRdy的值是优先级最高的就绪任务的控制块地址 */
+            if (OSPrioHighRdy != OSPrioCur) {          /* No Ctx Sw if current task is highest rdy    如果优先级最高的任务不是当前正在运行的任务，这时才需要任务切换 */
 #if OS_TASK_PROFILE_EN > 0u
-                OSTCBHighRdy->OSTCBCtxSwCtr++;         /* Inc. # of context switches to this task      */
+                OSTCBHighRdy->OSTCBCtxSwCtr++;         /* Inc. # of context switches to this task    OSTCBCtxSwCtr表示任务被调度的次数  */
 #endif
-                OSCtxSwCtr++;                          /* Increment context switch counter             */
-                OS_TASK_SW();                          /* Perform a context switch                     */
+                OSCtxSwCtr++;                          /* Increment context switch counter   整个操作系统进行任务切换的次数再加1          */
+                OS_TASK_SW();                          /* Perform a context switch          进行任务切换           */
             }
         }
     }
