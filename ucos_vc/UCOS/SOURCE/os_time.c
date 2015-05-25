@@ -14,7 +14,7 @@
 * LICENSING TERMS:
 * ---------------
 *   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micri�m to properly license
+* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license
 * its use in your product. We provide ALL the source code for your convenience and to help you experience
 * uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
 * licensing fee.
@@ -50,22 +50,22 @@ void  OSTimeDly (INT32U ticks)
 
 
 
-    if (OSIntNesting > 0u) {                     /* See if trying to call from an ISR                  */
+    if (OSIntNesting > 0u) {                     /* See if trying to call from an ISR   中断服务程序不能延时               */
         return;
     }
-    if (OSLockNesting > 0u) {                    /* See if called with scheduler locked                */
+    if (OSLockNesting > 0u) {                    /* See if called with scheduler locked  如果调度器被上锁，则也不能延时。因为延时后就要进行调度              */
         return;
     }
     if (ticks > 0u) {                            /* 0 means no delay!                                  */
         OS_ENTER_CRITICAL();
-        y            =  OSTCBCur->OSTCBY;        /* Delay current task                                 */
+        y            =  OSTCBCur->OSTCBY;        /* Delay current task   在就续组和就绪表中取消当前任务的就绪标志                              */
         OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
         if (OSRdyTbl[y] == 0u) {
             OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
         }
-        OSTCBCur->OSTCBDly = ticks;              /* Load ticks in TCB                                  */
+        OSTCBCur->OSTCBDly = ticks;              /* Load ticks in TCB     给任务块的 OSTCBDly项赋值延时时间                            */
         OS_EXIT_CRITICAL();
-        OS_Sched();                              /* Find next task to run!                             */
+        OS_Sched();                              /* Find next task to run!    进行一次任务调度                         */
     }
 }
 /*$PAGE*/
