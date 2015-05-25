@@ -14,7 +14,7 @@
 * LICENSING TERMS:
 * ---------------
 *   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license
+* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriç¥„ to properly license
 * its use in your product. We provide ALL the source code for your convenience and to help you experience
 * uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
 * licensing fee.
@@ -569,25 +569,25 @@ INT16U  OSEventPendMulti (OS_EVENT  **pevents_pend,
 
 void  OSInit (void)
 {
-    OSInitHookBegin();                                           /* Call port specific initialization code ÓÃ»§±àĞ´¸Ãº¯ÊıÊµÏÖ¶Ë¿ÚËµÃ÷  */
+    OSInitHookBegin();                                           /* Call port specific initialization code ç”¨æˆ·ç¼–å†™è¯¥å‡½æ•°å®ç°ç«¯å£è¯´æ˜  */
 
-    OS_InitMisc();                                               /* Initialize miscellaneous variables ³õÊ¼»¯¸÷ÖÖÈ«¾Ö±äÁ¿      */
+    OS_InitMisc();                                               /* Initialize miscellaneous variables åˆå§‹åŒ–å„ç§å…¨å±€å˜é‡      */
 
-    OS_InitRdyList();                                            /* Initialize the Ready List    ³õÊ¼»¯¾ÍĞ÷±í            */
+    OS_InitRdyList();                                            /* Initialize the Ready List    åˆå§‹åŒ–å°±ç»ªè¡¨            */
 
-    OS_InitTCBList();                                            /* Initialize the free list of OS_TCBs   ³õÊ¼»¯ÈÎÎñ¿ØÖÆ¿é¿ÕÏĞÁ´±í   */
+    OS_InitTCBList();                                            /* Initialize the free list of OS_TCBs   åˆå§‹åŒ–ä»»åŠ¡æ§åˆ¶å—ç©ºé—²é“¾è¡¨   */
 
-    OS_InitEventList();                                          /* Initialize the free list of OS_EVENTs  ³õÊ¼»¯¿ÕÏĞÊÂ¼şÁĞ±í  */
+    OS_InitEventList();                                          /* Initialize the free list of OS_EVENTs  åˆå§‹åŒ–ç©ºé—²äº‹ä»¶åˆ—è¡¨  */
 
-#if (OS_FLAG_EN > 0u) && (OS_MAX_FLAGS > 0u)                     //Èç¹ûÊ¹ÓÃÊÂ¼ş±êÖ¾£¬Ôò¶ÔÊÂ¼ş±êÖ¾½øĞĞ³õÊ¼»¯
+#if (OS_FLAG_EN > 0u) && (OS_MAX_FLAGS > 0u)                     //å¦‚æœä½¿ç”¨äº‹ä»¶æ ‡å¿—ï¼Œåˆ™å¯¹äº‹ä»¶æ ‡å¿—è¿›è¡Œåˆå§‹åŒ–
     OS_FlagInit();                                               /* Initialize the event flag structures     */
 #endif
 
-#if (OS_MEM_EN > 0u) && (OS_MAX_MEM_PART > 0u)						//Èç¹ûÅäÖÃÄÚ´æ¹ÜÀí£¬¶ÔÄÚ´æ³õÊ¼»¯
+#if (OS_MEM_EN > 0u) && (OS_MAX_MEM_PART > 0u)						//å¦‚æœé…ç½®å†…å­˜ç®¡ç†ï¼Œå¯¹å†…å­˜åˆå§‹åŒ–
     OS_MemInit();                                                /* Initialize the memory manager            */
 #endif
 
-#if (OS_Q_EN > 0u) && (OS_MAX_QS > 0u)							//Èç¹ûÊ¹ÓÃÏûÏ¢¶ÓÁĞ£¬³õÊ¼»¯ÏûÏ¢¶ÓÁĞ
+#if (OS_Q_EN > 0u) && (OS_MAX_QS > 0u)							//å¦‚æœä½¿ç”¨æ¶ˆæ¯é˜Ÿåˆ—ï¼Œåˆå§‹åŒ–æ¶ˆæ¯é˜Ÿåˆ—
     OS_QInit();                                                  /* Initialize the message queue structures  */
 #endif
 
@@ -597,12 +597,12 @@ void  OSInit (void)
 #endif
 
 #if OS_TMR_EN > 0u
-    OSTmr_Init();                                                /* Initialize the Timer Manager³õÊ¼»¯¶¨Ê±¹ÜÀíÄ£¿é  */
+    OSTmr_Init();                                                /* Initialize the Timer Manageråˆå§‹åŒ–å®šæ—¶ç®¡ç†æ¨¡å—  */
 #endif
 
     OSInitHookEnd();                                             /* Call port specific init. code            */
 
-#if OS_DEBUG_EN > 0u                                           //Èç¹ûÖ§³Öµ÷ÊÔ£¬ÓÃ»§ÔÚÕâÀï¼ÓÈëµ÷ÊÔ´úÂë
+#if OS_DEBUG_EN > 0u                                           //å¦‚æœæ”¯æŒè°ƒè¯•ï¼Œç”¨æˆ·åœ¨è¿™é‡ŒåŠ å…¥è°ƒè¯•ä»£ç 
     OSDebugInit();                   
 #endif
 }
@@ -647,8 +647,8 @@ void  OSIntEnter (void)
 *
 * Description: This function is used to notify uC/OS-II that you have completed serviving an ISR.  When
 *              the last nested ISR has completed, uC/OS-II will call the scheduler to determine whether
-*              a new, high-priority task, is ready to run.
-*
+*              a new, high-priority task, is ready to run. 
+*		æ‰¾åˆ°ä¼˜å…ˆçº§æœ€é«˜çš„é‚£ä¸ªä»»åŠ¡æ¥è¿è¡Œï¼Œè€Œå¹¶éæ˜¯åŸæ¥è¢«æŒ‚èµ·çš„é‚£ä¸ªä»»åŠ¡
 * Arguments  : none
 *
 * Returns    : none
@@ -874,8 +874,8 @@ void  OSStatInit (void)
 /*$PAGE*/
 /*
 *********************************************************************************************************
-*                                         PROCESS SYSTEM TICK   ÈÎÎñµ÷¶Èº¯Êı¡£
-*Æô¶¯¶àÈÎÎñÒÔºó£¬Ã¿¸öÊ±ÖÓÖĞ¶Ï¶¼ÒªÍ¨¹ı¸Ãº¯ÊıÖ´ĞĞÈÎÎñµÄµ÷¶È
+*                                         PROCESS SYSTEM TICK   ä»»åŠ¡è°ƒåº¦å‡½æ•°ã€‚
+*å¯åŠ¨å¤šä»»åŠ¡ä»¥åï¼Œæ¯ä¸ªæ—¶é’Ÿä¸­æ–­éƒ½è¦é€šè¿‡è¯¥å‡½æ•°æ‰§è¡Œä»»åŠ¡çš„è°ƒåº¦
 * Description: This function is used to signal to uC/OS-II the occurrence of a 'system tick' (also known
 *              as a 'clock tick').  This function should be called by the ticker ISR but, can also be
 *              called by a high priority task.
@@ -890,14 +890,14 @@ void  OSTimeTick (void)
 {
     OS_TCB    *ptcb;
     BOOLEAN    step;
-    OSTimeTickHook();                                      /*µ÷ÓÃÓÃ»§¹³×Óº¯Êı£¬Ä¬ÈÏÊÇ¿Õº¯Êı                     */
+    OSTimeTickHook();                                      /*è°ƒç”¨ç”¨æˆ·é’©å­å‡½æ•°ï¼Œé»˜è®¤æ˜¯ç©ºå‡½æ•°                     */
 
 #if OS_TIME_GET_SET_EN > 0u
     OS_ENTER_CRITICAL();                                   /* Update the 32-bit tick counter               */
-    OSTime++;												/* µ÷¶È¼ÆÊıÆ÷¼Ó1 */
+    OSTime++;												/* è°ƒåº¦è®¡æ•°å™¨åŠ 1 */
     OS_EXIT_CRITICAL();
 #endif
-    if (OSRunning == OS_TRUE) {								/* Èç¹ûÒÑ¾­Æô¶¯ÁË¶àÈÎÎñ */
+    if (OSRunning == OS_TRUE) {								/* å¦‚æœå·²ç»å¯åŠ¨äº†å¤šä»»åŠ¡ */
 #if OS_TICK_STEP_EN > 0u
         switch (OSTickStepState) {                         /* Determine whether we need to process a tick  */
             case OS_TICK_STEP_DIS:                         /* Yes, stepping is disabled                    */
@@ -922,28 +922,28 @@ void  OSTimeTick (void)
             return;
         }
 #endif
-        ptcb = OSTCBList;                                  /* Point at first TCB in TCB list    ptcbÖ¸Ïò¾ÍĞ÷Á´±íµÄ±íÍ·           */
-        while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list   Èç¹û¸ÃÈÎÎñÎª·Ç¿ÕÏĞÈÎÎñ          */
-			/* ¾ÍĞ÷Á´±íÖĞµÄ×îºóÒ»¸öTCBÊÇ¿ÕÏĞÈÎÎñµÄ£¬´Ó²Ù×÷ÏµÍ³µÄ³õÊ¼»¯º¯ÊıOSInitÀ´¿´£¬ÎÒÃÇ´´½¨µÄµÚÒ»¸öÈÎÎñÊÇ¿ÕÏĞÈÎÎñ¡£È»ºóÃ¿´Î´´½¨µÄĞÂÈÎÎñ¶¼ÊÇ
-			½«¸ÃÈÎÎñµÄTCB²åÈëµ½¾ÍĞ÷Á´±íµÄ±íÍ·£¬¶ø¿ÕÏĞÈÎÎñ²»ÔÊĞí±»É¾³ı¡£Òò´Ë£¬ÔÚ¾ÍĞ÷Á´±íÖĞ£¬×îºóÒ»¸öTCBÓÀÔ¶ÊÇ¿ÕÏĞÈÎÎñµÄ¡£ËùÒÔwhileÑ­»·´Ó¾ÍĞ÷Á´±íµÄ
-			±íÍ·¿ªÊ¼£¬Ò»Ö±µ½¿ÕÏĞÈÎÎñÎªÖ¹£¬±éÀúÁË³ı¿ÕÏĞÈÎÎñÖ®ÍâµÄËùÓĞÈÎÎñ¡£*/
+        ptcb = OSTCBList;                                  /* Point at first TCB in TCB list    ptcbæŒ‡å‘å°±ç»ªé“¾è¡¨çš„è¡¨å¤´           */
+        while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list   å¦‚æœè¯¥ä»»åŠ¡ä¸ºéç©ºé—²ä»»åŠ¡          */
+			/* å°±ç»ªé“¾è¡¨ä¸­çš„æœ€åä¸€ä¸ªTCBæ˜¯ç©ºé—²ä»»åŠ¡çš„ï¼Œä»æ“ä½œç³»ç»Ÿçš„åˆå§‹åŒ–å‡½æ•°OSInitæ¥çœ‹ï¼Œæˆ‘ä»¬åˆ›å»ºçš„ç¬¬ä¸€ä¸ªä»»åŠ¡æ˜¯ç©ºé—²ä»»åŠ¡ã€‚ç„¶åæ¯æ¬¡åˆ›å»ºçš„æ–°ä»»åŠ¡éƒ½æ˜¯
+			å°†è¯¥ä»»åŠ¡çš„TCBæ’å…¥åˆ°å°±ç»ªé“¾è¡¨çš„è¡¨å¤´ï¼Œè€Œç©ºé—²ä»»åŠ¡ä¸å…è®¸è¢«åˆ é™¤ã€‚å› æ­¤ï¼Œåœ¨å°±ç»ªé“¾è¡¨ä¸­ï¼Œæœ€åä¸€ä¸ªTCBæ°¸è¿œæ˜¯ç©ºé—²ä»»åŠ¡çš„ã€‚æ‰€ä»¥whileå¾ªç¯ä»å°±ç»ªé“¾è¡¨çš„
+			è¡¨å¤´å¼€å§‹ï¼Œä¸€ç›´åˆ°ç©ºé—²ä»»åŠ¡ä¸ºæ­¢ï¼Œéå†äº†é™¤ç©ºé—²ä»»åŠ¡ä¹‹å¤–çš„æ‰€æœ‰ä»»åŠ¡ã€‚*/
             OS_ENTER_CRITICAL();
-            if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO Èç¹û¸ÃÈÎÎñÉèÖÃÁËÊ±¼äÑÓÊ±»òÊÂ¼şµÈ´ıÑÓÊ±    */
-                ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay  ÑÓÊ±Ê±¼ä¼õ1£¬ÒòÎª¹ıÁË1¸öÊ±ÖÓµÎ´ğ     */
-                if (ptcb->OSTCBDly == 0u) {                /* Check for timeout             ¼ì²éÑÓÊ±ÊÇ·ñµ½ÆÚÁË               */
+            if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO å¦‚æœè¯¥ä»»åŠ¡è®¾ç½®äº†æ—¶é—´å»¶æ—¶æˆ–äº‹ä»¶ç­‰å¾…å»¶æ—¶    */
+                ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay  å»¶æ—¶æ—¶é—´å‡1ï¼Œå› ä¸ºè¿‡äº†1ä¸ªæ—¶é’Ÿæ»´ç­”     */
+                if (ptcb->OSTCBDly == 0u) {                /* Check for timeout             æ£€æŸ¥å»¶æ—¶æ˜¯å¦åˆ°æœŸäº†               */
 
-                    if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {  /* Èç¹ûÈÎÎñÓĞµÈ´ıÈÎÒ»ÊÂ¼şµÄ·¢Éú */
-						/* ÇåµÈ´ı±êÖ¾£¬ÒòÎªµÈ´ıÊ±¼äµ½ÁË£¬ÊÂ¼şÃ»ÓĞ·¢Éú£¬²»ÔÙµÈ´ı */
+                    if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {  /* å¦‚æœä»»åŠ¡æœ‰ç­‰å¾…ä»»ä¸€äº‹ä»¶çš„å‘ç”Ÿ */
+						/* æ¸…ç­‰å¾…æ ‡å¿—ï¼Œå› ä¸ºç­‰å¾…æ—¶é—´åˆ°äº†ï¼Œäº‹ä»¶æ²¡æœ‰å‘ç”Ÿï¼Œä¸å†ç­‰å¾… */
                         ptcb->OSTCBStat  &= (INT8U)~(INT8U)OS_STAT_PEND_ANY;          /* Yes, Clear status flag   */
-                        ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout  Ö¸Ê¾ÊÂ¼şµÈ´ıÒòÎª³¬Ê±µÄÔ­ÒòÎª½áÊø  */
-                    } else {			                                    	/* Èç¹ûÈÎÎñÃ»ÓĞµÈ´ıÊÂ¼şµÄ·¢Éú£¬ÄÇÃ´Ö»ÊÇ¼òµ¥µÄÑÓÊ± */
-                        ptcb->OSTCBStatPend = OS_STAT_PEND_OK;                  /* Ö¸Ê¾ÑÓÊ±Ê±¼äµ½ÁË */
+                        ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout  æŒ‡ç¤ºäº‹ä»¶ç­‰å¾…å› ä¸ºè¶…æ—¶çš„åŸå› ä¸ºç»“æŸ  */
+                    } else {			                                    	/* å¦‚æœä»»åŠ¡æ²¡æœ‰ç­‰å¾…äº‹ä»¶çš„å‘ç”Ÿï¼Œé‚£ä¹ˆåªæ˜¯ç®€å•çš„å»¶æ—¶ */
+                        ptcb->OSTCBStatPend = OS_STAT_PEND_OK;                  /* æŒ‡ç¤ºå»¶æ—¶æ—¶é—´åˆ°äº† */
                     }
 
-                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?  Èç¹ûÈÎÎñ²»ÊÇ±»¹ÒÆğµÄ     */
+                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?  å¦‚æœä»»åŠ¡ä¸æ˜¯è¢«æŒ‚èµ·çš„     */
                         OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready          */
                         OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;		
-						/* ÑÓÊ±Ê±¼äµ½ÁË£¬ÈÃÈÎÎñ¾ÍĞ÷¡£Èç¹ûÈÎÎñÊÇ±»¹ÒÆğµÄ£¬¾¡¹ÜÑÓÊ±Ê±¼äµ½ÁË£¬Ò²²»ÄÜ¾ÍĞ÷£¬¹ÒÆğµÄÈÎÎñÖ»ÄÜÓÃOSTaskResumeÀ´»Ö¸´µ½¾ÍĞ÷×´Ì¬ */
+						/* å»¶æ—¶æ—¶é—´åˆ°äº†ï¼Œè®©ä»»åŠ¡å°±ç»ªã€‚å¦‚æœä»»åŠ¡æ˜¯è¢«æŒ‚èµ·çš„ï¼Œå°½ç®¡å»¶æ—¶æ—¶é—´åˆ°äº†ï¼Œä¹Ÿä¸èƒ½å°±ç»ªï¼ŒæŒ‚èµ·çš„ä»»åŠ¡åªèƒ½ç”¨OSTaskResumeæ¥æ¢å¤åˆ°å°±ç»ªçŠ¶æ€ */
                     }
                 }
             }
@@ -1313,7 +1313,7 @@ static  void  OS_InitEventList (void)
 *                                    INITIALIZE MISCELLANEOUS VARIABLES
 *
 * Description: This function is called by OSInit() to initialize miscellaneous variables.  
-*				³õÊ¼»¯È«¾Ö±äÁ¿£¬ÕâĞ©È«¾Ö±äÁ¿ÔÚucos_ii.hÖĞ¶¨ÒåµÄ
+*				åˆå§‹åŒ–å…¨å±€å˜é‡ï¼Œè¿™äº›å…¨å±€å˜é‡åœ¨ucos_ii.hä¸­å®šä¹‰çš„
 * Arguments  : none
 *
 * Returns    : none
@@ -1326,20 +1326,20 @@ static  void  OS_InitMisc (void)
     OSTime                    = 0uL;                       /* Clear the 32-bit system clock            */
 #endif
 
-    OSIntNesting              = 0u;                        /* Clear the interrupt nesting counter ÇåÖĞ¶ÏÇ¶Ì×¼ÆÊıÆ÷     */
-    OSLockNesting             = 0u;                        /* Clear the scheduling lock counter    Çåµ÷¶ÈËø¼ÆÊıÆ÷    */
+    OSIntNesting              = 0u;                        /* Clear the interrupt nesting counter æ¸…ä¸­æ–­åµŒå¥—è®¡æ•°å™¨     */
+    OSLockNesting             = 0u;                        /* Clear the scheduling lock counter    æ¸…è°ƒåº¦é”è®¡æ•°å™¨    */
 
-    OSTaskCtr                 = 0u;                        /* Clear the number of tasks       µ±Ç°ÈÎÎñÊıÊÇ0         */
+    OSTaskCtr                 = 0u;                        /* Clear the number of tasks       å½“å‰ä»»åŠ¡æ•°æ˜¯0         */
 
-    OSRunning                 = OS_FALSE;                  /* Indicate that multitasking not started  µ±Ç°Ã»ÓĞÈÎÎñÔËĞĞ */
+    OSRunning                 = OS_FALSE;                  /* Indicate that multitasking not started  å½“å‰æ²¡æœ‰ä»»åŠ¡è¿è¡Œ */
 
-    OSCtxSwCtr                = 0u;                        /* Clear the context switch counter    ÈÎÎñÇĞ»»´ÎÊıÊÇ0     */
-    OSIdleCtr                 = 0uL;                       /* Clear the 32-bit idle counter     ¿ÕÏĞ¼ÆÊıÆ÷Îª0       */
+    OSCtxSwCtr                = 0u;                        /* Clear the context switch counter    ä»»åŠ¡åˆ‡æ¢æ¬¡æ•°æ˜¯0     */
+    OSIdleCtr                 = 0uL;                       /* Clear the 32-bit idle counter     ç©ºé—²è®¡æ•°å™¨ä¸º0       */
 
-#if OS_TASK_STAT_EN > 0u									//Èç¹ûÍ³¼ÆÔËĞĞ×´Ì¬£¬ÔòĞèÖ´ĞĞÍ³¼Æº¯Êı
-    OSIdleCtrRun              = 0uL;						//1ÃëÄÚµÄ¿ÕÏĞ¼ÆÊıÖµÎª0
-    OSIdleCtrMax              = 0uL;                        //×î´ó¿ÕÏĞ¼ÆÊıÖµÊÇ0
-    OSStatRdy                 = OS_FALSE;                  /* Statistic task is not ready  Í³¼ÆÈÎÎñ»¹Ã»ÓĞ×¼±¸ºÃ    */
+#if OS_TASK_STAT_EN > 0u									//å¦‚æœç»Ÿè®¡è¿è¡ŒçŠ¶æ€ï¼Œåˆ™éœ€æ‰§è¡Œç»Ÿè®¡å‡½æ•°
+    OSIdleCtrRun              = 0uL;						//1ç§’å†…çš„ç©ºé—²è®¡æ•°å€¼ä¸º0
+    OSIdleCtrMax              = 0uL;                        //æœ€å¤§ç©ºé—²è®¡æ•°å€¼æ˜¯0
+    OSStatRdy                 = OS_FALSE;                  /* Statistic task is not ready  ç»Ÿè®¡ä»»åŠ¡è¿˜æ²¡æœ‰å‡†å¤‡å¥½    */
 #endif
 
 #ifdef OS_SAFETY_CRITICAL_IEC61508
@@ -1365,16 +1365,16 @@ static  void  OS_InitRdyList (void)
     INT8U  i;
 
 
-    OSRdyGrp      = 0u;                         /* Clear the ready list µ±Ç°Ã»ÓĞ¾ÍĞ÷ÈÎÎñ£¬ËùÒÔ¾ÍĞ÷×éÎª0x00   */
+    OSRdyGrp      = 0u;                         /* Clear the ready list å½“å‰æ²¡æœ‰å°±ç»ªä»»åŠ¡ï¼Œæ‰€ä»¥å°±ç»ªç»„ä¸º0x00   */
     for (i = 0u; i < OS_RDY_TBL_SIZE; i++) {
-        OSRdyTbl[i] = 0u;                      //½«¾ÍĞ÷×é±íÇå0
+        OSRdyTbl[i] = 0u;                      //å°†å°±ç»ªç»„è¡¨æ¸…0
     }
-	//ÒÔÏÂÊÇ4¸öÖØÒªµÄÓëÈÎÎñÏà¹ØµÄÈ«¾Ö±äÁ¿
-    OSPrioCur     = 0u;                        //Òòµ±Ç°Ã»ÓĞÈÎÎñÔËĞĞ£¬ËùÒÔµ±Ç°ÈÎÎñµÄÓÅÏÈ¼¶³õÊ¼»¯Îª0
-    OSPrioHighRdy = 0u;                        //Í¬ÉÏ£¬×î¸ßÓÅÏÈ¼¶µÄÈÎÎñµÄÓÅÏÈ¼¶³õÊ¼»¯Îª0
+	//ä»¥ä¸‹æ˜¯4ä¸ªé‡è¦çš„ä¸ä»»åŠ¡ç›¸å…³çš„å…¨å±€å˜é‡
+    OSPrioCur     = 0u;                        //å› å½“å‰æ²¡æœ‰ä»»åŠ¡è¿è¡Œï¼Œæ‰€ä»¥å½“å‰ä»»åŠ¡çš„ä¼˜å…ˆçº§åˆå§‹åŒ–ä¸º0
+    OSPrioHighRdy = 0u;                        //åŒä¸Šï¼Œæœ€é«˜ä¼˜å…ˆçº§çš„ä»»åŠ¡çš„ä¼˜å…ˆçº§åˆå§‹åŒ–ä¸º0
 
-    OSTCBHighRdy  = (OS_TCB *)0;				//×î¸ßÓÅÏÈ¼¶µÄÈÎÎñµÄ¿ØÖÆ¿éµÄÖ¸Õë³õÊ¼»¯
-    OSTCBCur      = (OS_TCB *)0;                //µ±Ç°ÔËĞĞµÄÈÎÎñµÄ¿ØÖÆ¿éµÄÖ¸Õë³õÊ¼»¯
+    OSTCBHighRdy  = (OS_TCB *)0;				//æœ€é«˜ä¼˜å…ˆçº§çš„ä»»åŠ¡çš„æ§åˆ¶å—çš„æŒ‡é’ˆåˆå§‹åŒ–
+    OSTCBCur      = (OS_TCB *)0;                //å½“å‰è¿è¡Œçš„ä»»åŠ¡çš„æ§åˆ¶å—çš„æŒ‡é’ˆåˆå§‹åŒ–
 }
 
 /*$PAGE*/
@@ -1383,7 +1383,7 @@ static  void  OS_InitRdyList (void)
 *                                             INITIALIZATION
 *                                         CREATING THE IDLE TASK
 *
-* Description: This function creates the Idle Task.    ³õÊ¼»¯¿ÕÏĞÈÎÎñ
+* Description: This function creates the Idle Task.    åˆå§‹åŒ–ç©ºé—²ä»»åŠ¡
 *
 * Arguments  : none
 *
@@ -1398,7 +1398,7 @@ static  void  OS_InitTaskIdle (void)
 #endif
 
 
-#if OS_TASK_CREATE_EXT_EN > 0u      //Èç¹ûÊ¹ÓÃÍØÕ¹µÄ´´½¨ÈÎÎñ¹¦ÄÜ£¨Ä¬ÈÏÊÇÊ¹ÓÃµÄ£©¡£
+#if OS_TASK_CREATE_EXT_EN > 0u      //å¦‚æœä½¿ç”¨æ‹“å±•çš„åˆ›å»ºä»»åŠ¡åŠŸèƒ½ï¼ˆé»˜è®¤æ˜¯ä½¿ç”¨çš„ï¼‰ã€‚
     #if OS_STK_GROWTH == 1u
     (void)OSTaskCreateExt(OS_TaskIdle,
                           (void *)0,                                 /* No arguments passed to OS_TaskIdle() */
@@ -1434,7 +1434,7 @@ static  void  OS_InitTaskIdle (void)
     #endif
 #endif
 
-#if OS_TASK_NAME_EN > 0u     //Èç¹ûÊ¹ÓÃÈÎÎñÃû³Æ
+#if OS_TASK_NAME_EN > 0u     //å¦‚æœä½¿ç”¨ä»»åŠ¡åç§°
     OSTaskNameSet(OS_TASK_IDLE_PRIO, (INT8U *)(void *)"uC/OS-II Idle", &err);
 #endif
 }
@@ -1444,7 +1444,7 @@ static  void  OS_InitTaskIdle (void)
 *                                             INITIALIZATION
 *                                      CREATING THE STATISTIC TASK
 *
-* Description: This function creates the Statistic Task.   ³õÊ¼»¯Í³¼ÆÈÎÎñ
+* Description: This function creates the Statistic Task.   åˆå§‹åŒ–ç»Ÿè®¡ä»»åŠ¡
 *
 * Arguments  : none
 *
@@ -1523,24 +1523,24 @@ static  void  OS_InitTCBList (void)
     OS_TCB  *ptcb2;
 
 
-    OS_MemClr((INT8U *)&OSTCBTbl[0],     sizeof(OSTCBTbl));      /* Clear all the TCBs  ¶ÔËùÓĞµÄÈÎÎñ¿ØÖÆ¿éÇåÁã  */
-    OS_MemClr((INT8U *)&OSTCBPrioTbl[0], sizeof(OSTCBPrioTbl));  /* Clear the priority table ¶ÔÈÎÎñÓÅÏÈ¼¶Ö¸Õë±íÇåÁã          */
-    for (ix = 0u; ix < (OS_MAX_TASKS + OS_N_SYS_TASKS - 1u); ix++) {    /* Init. list of free TCBs ÒÔÏÂÊÇ³õÊ¼»¯¿ÕÏĞ¿é£¬¼´¹¹½¨Ò»¸öµ¥ÏòÁ´±í    */
+    OS_MemClr((INT8U *)&OSTCBTbl[0],     sizeof(OSTCBTbl));      /* Clear all the TCBs  å¯¹æ‰€æœ‰çš„ä»»åŠ¡æ§åˆ¶å—æ¸…é›¶  */
+    OS_MemClr((INT8U *)&OSTCBPrioTbl[0], sizeof(OSTCBPrioTbl));  /* Clear the priority table å¯¹ä»»åŠ¡ä¼˜å…ˆçº§æŒ‡é’ˆè¡¨æ¸…é›¶          */
+    for (ix = 0u; ix < (OS_MAX_TASKS + OS_N_SYS_TASKS - 1u); ix++) {    /* Init. list of free TCBs ä»¥ä¸‹æ˜¯åˆå§‹åŒ–ç©ºé—²å—ï¼Œå³æ„å»ºä¸€ä¸ªå•å‘é“¾è¡¨    */
         ix_next =  ix + 1u;
         ptcb1   = &OSTCBTbl[ix];
         ptcb2   = &OSTCBTbl[ix_next];
-        ptcb1->OSTCBNext = ptcb2;         //µÚix¸öTCBµÄOSTCBNextÖ¸ÏòµÚix+1¸ö
+        ptcb1->OSTCBNext = ptcb2;         //ç¬¬ixä¸ªTCBçš„OSTCBNextæŒ‡å‘ç¬¬ix+1ä¸ª
 #if OS_TASK_NAME_EN > 0u
         ptcb1->OSTCBTaskName = (INT8U *)(void *)"?";             /* Unknown name                       */
 #endif
     }
-    ptcb1                   = &OSTCBTbl[ix];      //ptcb1Ö¸Ïò×îºóÒ»¸ö
-    ptcb1->OSTCBNext        = (OS_TCB *)0;                       /* Last OS_TCB   ×îºóÒ»¸öÈÎÎñ¿ØÖÆ¿éµÄOSTCBNextÖ¸Ïò¿ÕµØÖ·     */
+    ptcb1                   = &OSTCBTbl[ix];      //ptcb1æŒ‡å‘æœ€åä¸€ä¸ª
+    ptcb1->OSTCBNext        = (OS_TCB *)0;                       /* Last OS_TCB   æœ€åä¸€ä¸ªä»»åŠ¡æ§åˆ¶å—çš„OSTCBNextæŒ‡å‘ç©ºåœ°å€     */
 #if OS_TASK_NAME_EN > 0u
     ptcb1->OSTCBTaskName    = (INT8U *)(void *)"?";              /* Unknown name                       */
 #endif
-    OSTCBList               = (OS_TCB *)0;                       /* TCB lists initializations Ê¹¾ÍĞ÷Á´±íÎª¿Õ         */
-    OSTCBFreeList           = &OSTCBTbl[0];                     //ÈÃOSTCBFreeListÖ¸Ïò¿ÕÏĞÁ´±íµÄ±íÍ·
+    OSTCBList               = (OS_TCB *)0;                       /* TCB lists initializations ä½¿å°±ç»ªé“¾è¡¨ä¸ºç©º         */
+    OSTCBFreeList           = &OSTCBTbl[0];                     //è®©OSTCBFreeListæŒ‡å‘ç©ºé—²é“¾è¡¨çš„è¡¨å¤´
 }
 /*$PAGE*/
 /*
@@ -1874,32 +1874,32 @@ void  OS_TaskStatStkChk (void)
 * Description: This function is internal to uC/OS-II and is used to initialize a Task Control Block when
 *              a task is created (see OSTaskCreate() and OSTaskCreateExt()).
 *
-* Arguments  : prio          is the priority of the task being created  ±»´´½¨µÄÈÎÎñµÄÓÅÏÈ¼¶
+* Arguments  : prio          is the priority of the task being created  è¢«åˆ›å»ºçš„ä»»åŠ¡çš„ä¼˜å…ˆçº§
 *
 *              ptos          is a pointer to the task's top-of-stack assuming that the CPU registers
 *                            have been placed on the stack.  Note that the top-of-stack corresponds to a
 *                            'high' memory location is OS_STK_GROWTH is set to 1 and a 'low' memory
 *                            location if OS_STK_GROWTH is set to 0.  Note that stack growth is CPU
-*                            specific.     ÈÎÎñ¶ÑÕ»Õ»¶¥µÄµØÖ·
+*                            specific.     ä»»åŠ¡å †æ ˆæ ˆé¡¶çš„åœ°å€
 *
 *              pbos          is a pointer to the bottom of stack.  A NULL pointer is passed if called by
 *                            'OSTaskCreate()'.    
-							 ÈÎÎñ¶ÑÕ»Õ»µ×µÄµØÖ·(Ê¹ÓÃOSTaskCreate´´½¨µÄÈÎÎñ£¬Ã»ÓĞÍØÕ¹¹¦ÄÜ£¬²»½øĞĞ¶ÑÕ»¼ì²é£¬Ò²¾Í²»ÓÃ¸Ã²ÎÊı)
+							 ä»»åŠ¡å †æ ˆæ ˆåº•çš„åœ°å€(ä½¿ç”¨OSTaskCreateåˆ›å»ºçš„ä»»åŠ¡ï¼Œæ²¡æœ‰æ‹“å±•åŠŸèƒ½ï¼Œä¸è¿›è¡Œå †æ ˆæ£€æŸ¥ï¼Œä¹Ÿå°±ä¸ç”¨è¯¥å‚æ•°)
 *
-*              id            is the task's ID (0..65535)  ÈÎÎñµÄID
+*              id            is the task's ID (0..65535)  ä»»åŠ¡çš„ID
 *
 *              stk_size      is the size of the stack (in 'stack units').  If the stack units are INT8Us
 *                            then, 'stk_size' contains the number of bytes for the stack.  If the stack
 *                            units are INT32Us then, the stack contains '4 * stk_size' bytes.  The stack
 *                            units are established by the #define constant OS_STK which is CPU
-*                            specific.  'stk_size' is 0 if called by 'OSTaskCreate()'.   ¶ÑÕ»µÄ´óĞ¡
+*                            specific.  'stk_size' is 0 if called by 'OSTaskCreate()'.   å †æ ˆçš„å¤§å°
 *
 *              pext          is a pointer to a user supplied memory area that is used to extend the task
 *                            control block.  This allows you to store the contents of floating-point
 *                            registers, MMU registers or anything else you could find useful during a
 *                            context switch.  You can even assign a name to each task and store this name
 *                            in this TCB extension.  A NULL pointer is passed if called by OSTaskCreate().
-*								ÈÎÎñ¿ØÖÆ¿éµÄÀ©Õ¹¿éµÄµØÖ·
+*								ä»»åŠ¡æ§åˆ¶å—çš„æ‰©å±•å—çš„åœ°å€
 *              opt           options as passed to 'OSTaskCreateExt()' or,
 *                            0 if called from 'OSTaskCreate()'.
 *
@@ -1931,21 +1931,21 @@ INT8U  OS_TCBInit (INT8U    prio,
     OS_ENTER_CRITICAL();
     ptcb = OSTCBFreeList;                                  /* Get a free TCB from the free TCB list    */
     if (ptcb != (OS_TCB *)0) {
-        OSTCBFreeList            = ptcb->OSTCBNext;        /* Update pointer to free TCB list ½«¿ÕÏĞÖ¸ÕëÒÆµ½ÏÂÒ»¸öTCB */  
-        OS_EXIT_CRITICAL();                                //ÉÏÃæµÄOSTCBFreeListÈ«¾Ö±äÁ¿Ê¹ÓÃÍê£¬Ôò¿ÉÒÔÀë¿ªÁÙ½çÇøÁË
-														    //¿ªÊ¼ÉèÖÃTCBÖĞµÄ¸÷¸öÓò
+        OSTCBFreeList            = ptcb->OSTCBNext;        /* Update pointer to free TCB list å°†ç©ºé—²æŒ‡é’ˆç§»åˆ°ä¸‹ä¸€ä¸ªTCB */  
+        OS_EXIT_CRITICAL();                                //ä¸Šé¢çš„OSTCBFreeListå…¨å±€å˜é‡ä½¿ç”¨å®Œï¼Œåˆ™å¯ä»¥ç¦»å¼€ä¸´ç•ŒåŒºäº†
+														    //å¼€å§‹è®¾ç½®TCBä¸­çš„å„ä¸ªåŸŸ
         ptcb->OSTCBStkPtr        = ptos;                   /* Load Stack pointer in TCB                */
         ptcb->OSTCBPrio          = prio;                   /* Load task priority into TCB              */
-        ptcb->OSTCBStat          = OS_STAT_RDY;            /* Task is ready to run   ÈÎÎñÔÚ´´½¨ºó¾Í´¦ÓÚ¾ÍĞ÷Ì¬ */
-        ptcb->OSTCBStatPend      = OS_STAT_PEND_OK;        /* Clear pend status Ã»ÓĞµÈ´ıÈÎÎñÊÂ¼ş              */
-        ptcb->OSTCBDly           = 0u;                     /* Task is not delayedÃ»ÓĞÉèÖÃÑÓÊ±                  */
+        ptcb->OSTCBStat          = OS_STAT_RDY;            /* Task is ready to run   ä»»åŠ¡åœ¨åˆ›å»ºåå°±å¤„äºå°±ç»ªæ€ */
+        ptcb->OSTCBStatPend      = OS_STAT_PEND_OK;        /* Clear pend status æ²¡æœ‰ç­‰å¾…ä»»åŠ¡äº‹ä»¶              */
+        ptcb->OSTCBDly           = 0u;                     /* Task is not delayedæ²¡æœ‰è®¾ç½®å»¶æ—¶                  */
 
-#if OS_TASK_CREATE_EXT_EN > 0u   //Èç¹ûÊ¹ÓÃÁËÍØÕ¹¹¦ÄÜ
-        ptcb->OSTCBExtPtr        = pext;                   /* Store pointer to TCB extension  ÍØÕ¹¿éµØÖ·  */
-        ptcb->OSTCBStkSize       = stk_size;               /* Store stack size       ¶ÑÕ»´óĞ¡                 */
-        ptcb->OSTCBStkBottom     = pbos;                   /* Store pointer to bottom of stack   Õ»µ×      */
-        ptcb->OSTCBOpt           = opt;                    /* Store task options           ÍØÕ¹Ñ¡Ïî            */
-        ptcb->OSTCBId            = id;                     /* Store task ID                ÈÎÎñID          */
+#if OS_TASK_CREATE_EXT_EN > 0u   //å¦‚æœä½¿ç”¨äº†æ‹“å±•åŠŸèƒ½
+        ptcb->OSTCBExtPtr        = pext;                   /* Store pointer to TCB extension  æ‹“å±•å—åœ°å€  */
+        ptcb->OSTCBStkSize       = stk_size;               /* Store stack size       å †æ ˆå¤§å°                 */
+        ptcb->OSTCBStkBottom     = pbos;                   /* Store pointer to bottom of stack   æ ˆåº•      */
+        ptcb->OSTCBOpt           = opt;                    /* Store task options           æ‹“å±•é€‰é¡¹            */
+        ptcb->OSTCBId            = id;                     /* Store task ID                ä»»åŠ¡ID          */
 #else
         pext                     = pext;                   /* Prevent compiler warning if not used     */
         stk_size                 = stk_size;
@@ -1954,20 +1954,20 @@ INT8U  OS_TCBInit (INT8U    prio,
         id                       = id;
 #endif
 
-#if OS_TASK_DEL_EN > 0u        //Èç¹ûÔÊĞíÉ¾³ıÈÎÎñ
-        ptcb->OSTCBDelReq        = OS_ERR_NONE;    //Ã»ÓĞÉ¾³ıÇëÇó
+#if OS_TASK_DEL_EN > 0u        //å¦‚æœå…è®¸åˆ é™¤ä»»åŠ¡
+        ptcb->OSTCBDelReq        = OS_ERR_NONE;    //æ²¡æœ‰åˆ é™¤è¯·æ±‚
 #endif
 
 #if OS_LOWEST_PRIO <= 63u                                         /* Pre-compute X, Y                  */
-        ptcb->OSTCBY             = (INT8U)(prio >> 3u);       //½«ÈÎÎñÓÅÏÈ¼¶µÄ¸ßÎ»¸øOSTCBY£¬±íÊ¾ÔÚ¾ÍĞ÷×éÖĞµÄÎ»ÖÃ
-        ptcb->OSTCBX             = (INT8U)(prio & 0x07u);     //½«ÈÎÎñÓÅÏÈ¼¶µÄµÍÎ»¸øOSTCBX£¬±íÊ¾ÔÚ¾ÍĞ÷±íÖĞµÄÎ»ÖÃ
+        ptcb->OSTCBY             = (INT8U)(prio >> 3u);       //å°†ä»»åŠ¡ä¼˜å…ˆçº§çš„é«˜ä½ç»™OSTCBYï¼Œè¡¨ç¤ºåœ¨å°±ç»ªç»„ä¸­çš„ä½ç½®
+        ptcb->OSTCBX             = (INT8U)(prio & 0x07u);     //å°†ä»»åŠ¡ä¼˜å…ˆçº§çš„ä½ä½ç»™OSTCBXï¼Œè¡¨ç¤ºåœ¨å°±ç»ªè¡¨ä¸­çš„ä½ç½®
 #else                                                             /* Pre-compute X, Y                  */
         ptcb->OSTCBY             = (INT8U)((INT8U)(prio >> 4u) & 0xFFu);
         ptcb->OSTCBX             = (INT8U) (prio & 0x0Fu);
 #endif
                                                                       /* Pre-compute BitX and BitY         */
-        ptcb->OSTCBBitY          = (OS_PRIO)(1uL << ptcb->OSTCBY);   //OSTCBBitYÓÃ8ÖĞÑ¡1ÂëµÄĞÎÊ½±íÊ¾OSTCBY
-        ptcb->OSTCBBitX          = (OS_PRIO)(1uL << ptcb->OSTCBX);    //OSTCBBitXÓÃ8ÖĞÑ¡1ÂëµÄĞÎÊ½±íÊ¾OSTCBX
+        ptcb->OSTCBBitY          = (OS_PRIO)(1uL << ptcb->OSTCBY);   //OSTCBBitYç”¨8ä¸­é€‰1ç çš„å½¢å¼è¡¨ç¤ºOSTCBY
+        ptcb->OSTCBBitX          = (OS_PRIO)(1uL << ptcb->OSTCBX);    //OSTCBBitXç”¨8ä¸­é€‰1ç çš„å½¢å¼è¡¨ç¤ºOSTCBX
 
 #if (OS_EVENT_EN)
         ptcb->OSTCBEventPtr      = (OS_EVENT  *)0;         /* Task is not pending on an  event         */
@@ -2001,28 +2001,28 @@ INT8U  OS_TCBInit (INT8U    prio,
             ptcb->OSTCBRegTbl[i] = 0u;
         }
 #endif
-		//ÒÔÏÂÁ½¸ö¹³×Óº¯Êı¿ÉÒÔÓÉÓÃ»§×Ô¼º±àĞ´´úÂë
-        OSTCBInitHook(ptcb);      //Ä¿Ç°ÊÇÒ»¸ö¿Õº¯Êı£¬¿ª·¢Õß¿ÉÒÔÌîĞ´×Ô¼ºµÄÄÚÈİ
+		//ä»¥ä¸‹ä¸¤ä¸ªé’©å­å‡½æ•°å¯ä»¥ç”±ç”¨æˆ·è‡ªå·±ç¼–å†™ä»£ç 
+        OSTCBInitHook(ptcb);      //ç›®å‰æ˜¯ä¸€ä¸ªç©ºå‡½æ•°ï¼Œå¼€å‘è€…å¯ä»¥å¡«å†™è‡ªå·±çš„å†…å®¹
 
         OSTaskCreateHook(ptcb);                            /* Call user defined hook                   */
 
-        OS_ENTER_CRITICAL();     //ÔÙ´Î½øÈëÁÙ½çÇø£¬ÒòÎªÒª¶ÔÈ«¾Ö±äÁ¿½øĞĞ´¦Àí
-        OSTCBPrioTbl[prio] = ptcb;         //ÉèÖÃÈÎÎñÓÅÏÈ¼¶Ö¸Õë±í£¬±íÖĞ´æ·Å¸ÃÓÅÏÈ¼¶ÈÎÎñ¿ØÖÆ¿éµÄµØÖ·
-		//ÏÂÃæÊÇ½«µ±Ç°Ö¸ÏòµÄ¿ÕÁ´±íÖĞµÄÈÎÎñ¿ØÖÆ¿éÌí¼Óµ½¾ÍĞ÷Á´±íµÄ×îÇ°Ãæ
+        OS_ENTER_CRITICAL();     //å†æ¬¡è¿›å…¥ä¸´ç•ŒåŒºï¼Œå› ä¸ºè¦å¯¹å…¨å±€å˜é‡è¿›è¡Œå¤„ç†
+        OSTCBPrioTbl[prio] = ptcb;         //è®¾ç½®ä»»åŠ¡ä¼˜å…ˆçº§æŒ‡é’ˆè¡¨ï¼Œè¡¨ä¸­å­˜æ”¾è¯¥ä¼˜å…ˆçº§ä»»åŠ¡æ§åˆ¶å—çš„åœ°å€
+		//ä¸‹é¢æ˜¯å°†å½“å‰æŒ‡å‘çš„ç©ºé“¾è¡¨ä¸­çš„ä»»åŠ¡æ§åˆ¶å—æ·»åŠ åˆ°å°±ç»ªé“¾è¡¨çš„æœ€å‰é¢
         ptcb->OSTCBNext    = OSTCBList;                    /* Link into TCB chain                      */
         ptcb->OSTCBPrev    = (OS_TCB *)0;
         if (OSTCBList != (OS_TCB *)0) {
             OSTCBList->OSTCBPrev = ptcb;
         }
         OSTCBList               = ptcb;
-		//ÏÂÃæ¶Ô¾ÍĞ÷×éºÍ¾ÍĞ÷±í½øĞĞÉèÖÃ
+		//ä¸‹é¢å¯¹å°±ç»ªç»„å’Œå°±ç»ªè¡¨è¿›è¡Œè®¾ç½®
         OSRdyGrp               |= ptcb->OSTCBBitY;         /* Make task ready to run                   */
         OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
-        OSTaskCtr++;                                       /* Increment the #tasks counterÈÎÎñÊı¼Ó1    */
+        OSTaskCtr++;                                       /* Increment the #tasks counterä»»åŠ¡æ•°åŠ 1    */
         OS_EXIT_CRITICAL();
         return (OS_ERR_NONE);
     }
-    OS_EXIT_CRITICAL();   //Èç¹ûÃ»ÓĞ¿ÕÏĞµÄÈÎÎñ¿ØÖÆ¿é£¬¾Í»áÖ±½ÓÔËĞĞµ½ÕâÀï
+    OS_EXIT_CRITICAL();   //å¦‚æœæ²¡æœ‰ç©ºé—²çš„ä»»åŠ¡æ§åˆ¶å—ï¼Œå°±ä¼šç›´æ¥è¿è¡Œåˆ°è¿™é‡Œ
     return (OS_ERR_TASK_NO_MORE_TCB);
 }
 	 	   	  		 			 	    		   		 		 	 	 			 	    		   	 			 	  	 		 				 		  			 		 					 	  	  		      		  	   		      		  	 		 	      		   		 		  	 		 	      		  		  		  
