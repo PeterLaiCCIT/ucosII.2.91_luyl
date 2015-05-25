@@ -875,7 +875,7 @@ void  OSStatInit (void)
 /*
 *********************************************************************************************************
 *                                         PROCESS SYSTEM TICK   任务调度函数。
-*启动多任务以后，每个时钟中断都要通过该函数执行任务的调度
+*启动多任务以后，每个时钟中断都要执行任务的调度，该函数就是任务调度函数。
 * Description: This function is used to signal to uC/OS-II the occurrence of a 'system tick' (also known
 *              as a 'clock tick').  This function should be called by the ticker ISR but, can also be
 *              called by a high priority task.
